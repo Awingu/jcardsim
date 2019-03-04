@@ -146,16 +146,16 @@ public class VSmartCard {
 							break;
 						case VSmartCardTCPProtocol.APDU:
 							final byte[] apdu = driverProtocol.readData();
-							System.out.println("== APDU");
-							hexDump(apdu);
+//							System.out.println("== APDU");
+//							hexDump(apdu);
 							final byte[] reply = CardManager.dispatchApdu(sim, apdu);
-							System.out.println("== Reply APDU");
-							hexDump(reply);
+//							System.out.println("== Reply APDU");
+//							hexDump(reply);
 							driverProtocol.writeData(reply);
 							break;
 					}
 				} catch (Exception e) {
-					System.out.println(e.toString());
+//					System.out.println(e.toString());
 				}
 			}
 		}
