@@ -21,6 +21,9 @@ import com.licel.jcardsim.utils.ByteUtil;
 import javacard.framework.*;
 import javacardx.apdu.ExtendedLength;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,6 +31,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 /**
  * Base implementation of Java Card Runtime.
@@ -70,6 +74,7 @@ public class SimulatorRuntime {
     protected byte transactionDepth = 0;
     /** previousActiveObject */
     protected Object previousActiveObject;
+    private static Logger logger = Logger.getLogger(SimulatorRuntime.class.getName());
 
     public SimulatorRuntime() {
         this(new TransientMemory());
@@ -303,7 +308,16 @@ public class SimulatorRuntime {
             applet.process(apdu);
             Util.setShort(theSW, (short) 0, (short) 0x9000);
         } catch (Throwable e) {
-//            e.printStackTrace(System.out);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            pw.close();
+            try {
+                sw.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            logger.fine(sw.toString());
             Util.setShort(theSW, (short) 0, ISO7816.SW_UNKNOWN);
             if (e instanceof CardException) {
                 Util.setShort(theSW, (short) 0, ((CardException) e).getReason());
